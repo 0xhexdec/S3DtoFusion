@@ -1,0 +1,13 @@
+{
+	"autodeskProduct":	"Fusion360",
+	"type":	"addin",
+	"id":	"913fac76-2211-4e1e-8f66-8513845063fa",
+	"author":	"Julian Pleines",
+	"description":	{
+		"":	"Import your .s3dx files from Shape3D into Fusion360. "
+	},
+	"version":	"0.1",
+	"runOnStartup":	false,
+	"supportedOS":	"windows",
+	"editEnabled":	true
+}
