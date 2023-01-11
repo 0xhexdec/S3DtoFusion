@@ -121,7 +121,7 @@ def _intersectionCurve(curve1: adsk.fusion.SketchEntity, curve2: Union[adsk.fusi
         pass
 
     # setting the project flag
-    app. executeTextCommand('Commands.SetBool infoProjectionLinkOption {value}'.format(value=1 if project else 0))
+    app.executeTextCommand('Commands.SetBool infoProjectionLinkOption {value}'.format(value=1 if project else 0))
 
 
     try:

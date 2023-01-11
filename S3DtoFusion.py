@@ -12,35 +12,39 @@ from .utils.test import test
 
 app = adsk.core.Application.get()
 
+def command_created(args: adsk.core.CommandCreatedEventArgs):
+    inputs = args.command.commandInputs
+    print(inputs)
+
 def run(context):
     try:
         # This will run the start function in each of your commands as defined in commands/__init__.py
-        # commands.stop()
-        # commands.start()
+        commands.start()
 
         # Only for testing to execute the Board parsing
 
-        progress = app.userInterface.createProgressDialog()
-        progress.isCancelButtonShown = False
-        progress.show("Converting S3DX file", "Load S3DX file", 0, 100, 0)
-        model: S3DModel = fromFile("C:/Users/Julian/plankton Kite/Kitefoilboards/Test2.s3dx", progress)
-        # model: S3DModel = None
-        settings = ConverterSettings()
-        settings.closedStringer = False  # DONE
-        settings.closedOutline = False  # DONE
-        settings.closedSlices = True   # DONE
-        settings.flipOutline = True  # DONE
-        settings.mirrorSlices = False   # DONE
-        settings.mirrorOutline = False  # DONE
-        settings.fixedPoints = False    # DONE
-        settings.fixedLines = False     # DONE
-        settings.create3d = True
+        # progress = app.userInterface.createProgressDialog()
+        # progress.isCancelButtonShown = False
+        # progress.show("Converting S3DX file", "Load S3DX file", 0, 100, 0)
+        # # model: S3DModel = fromFile("C:/Users/Julian/plankton Kite/Kitefoilboards/Test2.s3dx", progress)
+        # model: S3DModel = fromFile("C:/Users/Julian/plankton Kite/Kitefoilboards/TestBoard.s3dx", progress)
+        # # model: S3DModel = None
+        # settings = ConverterSettings()
+        # settings.closedStringer = False  # DONE
+        # settings.closedOutline = False  # DONE
+        # settings.closedSlices = True   # DONE
+        # settings.flipOutline = True  # DONE
+        # settings.mirrorSlices = False   # DONE
+        # settings.mirrorOutline = False  # DONE
+        # settings.fixedPoints = False    # DONE
+        # settings.fixedLines = False     # DONE
+        # # settings.create3d = True
 
+        # settings.mergePoints = False    # seems to be needed by default. have i done this so far?
+        # settings.constrainedPoints = False
 
-        settings.mergePoints = False    # seems to be needed by default. have i done this so far?
-        settings.constrainedPoints = False
-        converter = Converter(model, settings)
-        converter.convertAll(app, None, progress)
+        # converter = Converter(model, settings)
+        # converter.convertAll(app, None, progress)
 
         # test()
 
@@ -53,8 +57,8 @@ def stop(context):
         # Remove all of the event handlers your app has created
         futil.clear_handlers()
 
-        # This will run the start function in each of your commands as defined in commands/__init__.py
-        # commands.stop()
+        # This will run the stop function in each of your commands as defined in commands/__init__.py
+        commands.stop()
 
     except Exception as e:
         futil.handle_error('stop')

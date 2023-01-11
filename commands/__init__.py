@@ -1,7 +1,9 @@
 from .commandDialog import entry as commandDialog
+from .commandDialog import set_experimental
 
 commands = [
     commandDialog,
+    set_experimental
     # paletteShow,
     # paletteSend
 ]

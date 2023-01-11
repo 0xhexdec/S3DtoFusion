@@ -16,6 +16,8 @@ from ...fusionConverter.converter import Converter
 from ...fusionConverter.converterSettings import ConverterSettings
 from ...lib import fusion360utils as futil
 from ...s3dModel import s3dx
+from ...s3dModel.s3dx import S3DModel
+from ...utils import addin_settings
 
 app = adsk.core.Application.get()
 ui = app.userInterface
@@ -23,7 +25,8 @@ ui = app.userInterface
 
 
 # TODO remove after tests
-skipFileSelection = True
+# skipFileSelection = True
+skipFileSelection = False
 
 CMD_ID = f'Plankton_{config.ADDIN_NAME}_cmdDialog'
 CMD_NAME = 'Import s3dx'
@@ -79,6 +82,7 @@ def start():
 
 # Executed when add-in is stopped.
 def stop():
+    futil.log(f'{CMD_NAME} stop')
     # Get the various UI elements for this command
     workspace = ui.workspaces.itemById(WORKSPACE_ID)
     panel = workspace.toolbarPanels.itemById(PANEL_ID)
@@ -179,26 +183,27 @@ def command_created(args: adsk.core.CommandCreatedEventArgs):
     input.tooltip = "Mirrors the Outline additionally to the other side."
     input.tooltipDescription = "By mirroring the Outline to the other side, the resulting shape is full-width board template instead of a half sized. <br><i>Only applied to the Outline, not to other top view lines.</i>"
 
-    group = inputs.addGroupCommandInput("3DGroup", "3D Options")
-    group.isExpanded = False
-    group.isEnabledCheckBoxDisplayed = True
-    group.isEnabledCheckBoxChecked = False
-    group.tooltip = "SLOW! UNFINISHED! Activate Lofted 3D Output"
-    group.tooltipDescription = "<b>CAUTION:</b> SLOW Create a full board based on the shapes and lines imported from Shape3D. <br><br>This Feature is under Development. Fusion is very picky when it comes to lofting. If the Lofting fails, you will be notified and you can revert the Board import. Sadly, if it fails, your current board is not loftable by the current version of this Add-In. This is mostly due to sharp steps in the rockerline."
-    children = group.children
+    if addin_settings.is_Experimental_active:
+        group = inputs.addGroupCommandInput("3DGroup", "3D Options")
+        group.isExpanded = False
+        group.isEnabledCheckBoxDisplayed = True
+        group.isEnabledCheckBoxChecked = False
+        group.tooltip = "SLOW! UNFINISHED! Activate Lofted 3D Output"
+        group.tooltipDescription = "<b>CAUTION:</b> SLOW Create a full board based on the shapes and lines imported from Shape3D. <br><br>This Feature is under Development. Fusion is very picky when it comes to lofting. If the Lofting fails, you will be notified and you can revert the Board import. Sadly, if it fails, your current board is not loftable by the current version of this Add-In. This is mostly due to sharp steps in the rockerline."
+        children = group.children
 
-    radioGroup = children.addRadioButtonGroupCommandInput("LoftTypeRadioButtonGroup", "Loft Type")
-    radioGroup.tooltip = "Lofts the board as either a Solid or a Surface model"
-    radioGroup.listItems.add("Solid", True, "", -1)
-    radioGroup.listItems.add("Surface", False, "", -1)
-    radioGroup.isEnabled = False
+        radioGroup = children.addRadioButtonGroupCommandInput("LoftTypeRadioButtonGroup", "Loft Type")
+        radioGroup.tooltip = "Lofts the board as either a Solid or a Surface model"
+        radioGroup.listItems.add("Solid", True, "", -1)
+        radioGroup.listItems.add("Surface", False, "", -1)
+        radioGroup.isEnabled = False
 
-    radioGroup = children.addRadioButtonGroupCommandInput("BoxesRadioButtonGroup", "Boxes")
-    radioGroup.tooltip = "Cuts the Boxes from the Board, just creates Bodies for the Boxes or both"
-    radioGroup.listItems.add("Cut", False, "", -1)
-    radioGroup.listItems.add("new Body", True, "", -1)
-    radioGroup.listItems.add("Both", False, "", -1)
-    radioGroup.isVisible = False
+        radioGroup = children.addRadioButtonGroupCommandInput("BoxesRadioButtonGroup", "Boxes")
+        radioGroup.tooltip = "Cuts the Boxes from the Board, just creates Bodies for the Boxes or both"
+        radioGroup.listItems.add("Cut", False, "", -1)
+        radioGroup.listItems.add("new Body", True, "", -1)
+        radioGroup.listItems.add("Both", False, "", -1)
+        radioGroup.isEnabled = False
 
 
     futil.add_handler(args.command.execute, command_execute, local_handlers=local_handlers)
@@ -213,18 +218,11 @@ def command_created(args: adsk.core.CommandCreatedEventArgs):
 def command_execute(args: adsk.core.CommandEventArgs):
     # General logging for debug.
     futil.log(f'{CMD_NAME} Command Execute Event')
+
+    # app.executeTextCommand('Commands.Start IntersectionCurve')
+    # print("After intersection curve")
     inputs = args.command.commandInputs
 
-    # Get a reference to your command's inputs.
-    # inputs = args.command.commandInputs
-    # text_box: adsk.core.TextBoxCommandInput = inputs.itemById('text_box')
-    # value_input: adsk.core.ValueCommandInput = inputs.itemById('value_input')
-
-    # # Do something interesting
-    # text = text_box.text
-    # expression = value_input.expression
-    # msg = f'Your text: {text}<br>Your value: {expression}'
-    # ui.messageBox(msg)
     filename = adsk.core.TextBoxCommandInput.cast(inputs.itemById("filePathText")).text
     settings: ConverterSettings = ConverterSettings()
     settings.constrainedPoints = adsk.core.BoolValueCommandInput.cast(inputs.itemById("constrainPointsInput")).value
@@ -239,10 +237,12 @@ def command_execute(args: adsk.core.CommandEventArgs):
     settings.mirrorSlices = adsk.core.BoolValueCommandInput.cast(inputs.itemById("mirrorSlicesInput")).value
     settings.mirrorOutline = adsk.core.BoolValueCommandInput.cast(inputs.itemById("mirrorOutlineInput")).value
 
-    settings.loftAsSolid = adsk.core.RadioButtonGroupCommandInput.cast(inputs.itemById("LoftTypeRadioButtonGroup")).selectedItem.name == "Solid"
-    name = adsk.core.RadioButtonGroupCommandInput.cast(inputs.itemById("BoxesRadioButtonGroup")).selectedItem.name
-    settings.boxesCutFromBoard = name == "Cut" or name == "Both"
-    settings.boxesAsBody = name == "new Body" or name == "Both"
+    if addin_settings.is_Experimental_active:
+        settings.create3d = adsk.core.GroupCommandInput.cast(inputs.itemById("3DGroup")).isEnabledCheckBoxChecked
+        settings.loftAsSolid = adsk.core.RadioButtonGroupCommandInput.cast(inputs.itemById("LoftTypeRadioButtonGroup")).selectedItem.name == "Solid"
+        name = adsk.core.RadioButtonGroupCommandInput.cast(inputs.itemById("BoxesRadioButtonGroup")).selectedItem.name
+        settings.boxesCutFromBoard = name == "Cut" or name == "Both"
+        settings.boxesAsBody = name == "new Body" or name == "Both"
 
     plane: adsk.fusion.ConstructionPlane = adsk.fusion.ConstructionPlane.cast(adsk.core.SelectionCommandInput.cast(inputs.itemById("selectionButton")).selection(0).entity)
 
@@ -250,25 +250,29 @@ def command_execute(args: adsk.core.CommandEventArgs):
     progress.isCancelButtonShown = False
     progress.show("Converting S3DX file", "Load S3DX file", 0, 100, 0)
     adsk.doEvents()
-    converter = Converter(s3dx.fromFile(filename, progress), settings)
+    model: S3DModel = s3dx.fromFile(filename, progress)
+    converter = Converter(model, settings)
     progress.progressValue = 50
     progress.message = "Creating Sketches"
     adsk.doEvents()
-    converter.convertAll(app, plane, progress)
+    converter.convertAll(app, None, progress)
+    # TODO change to using the selected rockerplane
+    # converter.convertAll(app, plane, progress)
     progress.hide()
-
+    futil.log(f'{CMD_NAME} Command Execute Event -> done')
 
 
 # This event handler is called when the command needs to compute a new preview in the graphics window.
 def command_preview(args: adsk.core.CommandEventArgs):
     # General logging for debug.
-    # futil.log(f'{CMD_NAME} Command Preview Event')
+    futil.log(f'{CMD_NAME} Command Preview Event')
     inputs = args.command.commandInputs
 
 
 # This event handler is called when the user changes anything in the command dialog
 # allowing you to modify values of other inputs based on that change.
 def command_input_changed(args: adsk.core.InputChangedEventArgs):
+    futil.log(f'{CMD_NAME} Command Input Changed')
     changed_input = args.input
     inputs = args.inputs
 
@@ -281,7 +285,7 @@ def command_input_changed(args: adsk.core.InputChangedEventArgs):
         if filename != "":
             adsk.core.TextBoxCommandInput.cast(inputs.itemById("filePathText")).formattedText = filename
         button.isEnabled = True
-    
+
     # elif changed_input.id == 'selectionButton':
     #     selection: SelectionCommandInput = inputs.itemById("selectionButton")  # type: ignore
     #     if selection.selectionCount != 0:
@@ -297,7 +301,7 @@ def command_input_changed(args: adsk.core.InputChangedEventArgs):
 # which allows you to verify that all of the inputs are valid and enables the OK button.
 def command_validate_input(args: adsk.core.ValidateInputsEventArgs):
     # General logging for debug.
-    # futil.log(f'{CMD_NAME} Validate Input Event')
+    futil.log(f'{CMD_NAME} Validate Input Event')
 
     inputs = args.inputs
     # inputs.areInputsValid = False  # type: ignore
@@ -316,14 +320,12 @@ def command_validate_input(args: adsk.core.ValidateInputsEventArgs):
 def command_destroy(args: adsk.core.CommandEventArgs):
     # General logging for debug.
     futil.log(f'{CMD_NAME} Command Destroy Event')
-
     global local_handlers
     local_handlers = []
 
 
 def getFilename() -> str:
     try:
-
         ui = app.userInterface
         if not skipFileSelection:
             dlg = ui.createFileDialog()

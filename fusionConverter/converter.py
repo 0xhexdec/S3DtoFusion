@@ -48,6 +48,7 @@ class Converter():
                 tailPlane = rootComponent.yZConstructionPlane
                 outlinePlane: ConstructionPlane = rootComponent.xZConstructionPlane
         else:
+            # TODO implement creation based on given rockerplane
             # create plane for tail slice
             tailPlane = None
             # create plane for Outline
@@ -80,7 +81,10 @@ class Converter():
             progress.message = "Lofting Board"
             adsk.doEvents()
 
-        self.create3D(component, outlinePlane)  # type: ignore
+        if self.settings.create3d:
+            timer.lap()
+            print("Start creating 3D model")
+            self.create3D(component, outlinePlane)  # type: ignore
 
         timer.lap()
         print("Done")
