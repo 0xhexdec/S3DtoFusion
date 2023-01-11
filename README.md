@@ -12,7 +12,7 @@ As this Add-In is still in early development, there is no official Fusion360 ins
 
 Firstly, download the latest [release](https://github.com/0xhexdec/S3DtoFusion/releases) of the Add-In.
 
-Unzip the the dowloaded file and rename the folder `S3DToFusion-x.y.z` to `S3DToFusion`, simply remove the version number.
+Unzip the dowloaded file and rename the folder `S3DToFusion-x.y.z` to `S3DToFusion`, simply remove the version number.
 
 Navigate to your Fusion 360 AddIns folder, (typically found here on Windows `%appdata%\Autodesk\Autodesk Fusion 360\API\AddIns`) and copy the `S3DToFusion` folder into the AddIns folder.
 
@@ -54,17 +54,17 @@ Disable all kinds of file protection!
 + Starting the AddIn takes some time and Fusion is unresponsive during this time. I am not 100% sure why but a big reason is that I have to download a python package in the background. Will fix this someday.
 + every form of "Non continuous" in the stringer or outline makes fusion to freak out, best to use the **Tangent-Type: Continuous** only (the type where both handles are fixed to each other) I try to work around this limitation in the future.
 + Lofting... ever used Fusion's lofting before?
-+ 3D export crashes Fusion, not my fault though...
++ 3D Body creation crashes Fusion, not my fault though...
 
 ## Q&A
 
-### I found a Bug
+### I found a Bug, what now?
 
 Yay, another one. Please report the bug by creating an [issue](https://github.com/0xhexdec/S3DtoFusion/issues).
 
 ### I can't see the 3D Options
 
-**Important Note**: *The 3D export feature currently has a bug, it uses on some Fusion functionality that is not directly accessible via the API. I used some workaround there that are officially deprecated by Autodesk. In some circumstances, the code works fine, but currently results in a crash of Fusion360. I will try to find another workaround.*
+**Important Note**: *The 3D body creation feature currently has a bug, it uses on some Fusion functionality that is not directly accessible via the API. I used some workarounds there that are officially deprecated by Autodesk. In some circumstances, the code works fine, but currently results in a crash of Fusion360. I will try to find another workaround.*
 
 If you downloaded the latest release and you can't see the 3D Options, you did not activate the `Experimental Features`, simply activate them by doing: `UTILITIES` -> `S3DX IMPORT dropdown` -> `Activate Experimental`
 
