@@ -80,10 +80,10 @@ class Converter():
             adsk.doEvents()
             self.convertBoxes(component, outlinePlane)  # type: ignore
             progress.progressValue = 80
-        if config.experimental_3d_spline_generation:
-            progress.message = "Building 3D Lines"
-            adsk.doEvents()
-            self.create3D(component, outlinePlane)  # type: ignore
+
+        progress.message = "Building 3D Lines"
+        adsk.doEvents()
+        self.create3D(component, outlinePlane)  # type: ignore
 
         timer.lap()
         print("Done")

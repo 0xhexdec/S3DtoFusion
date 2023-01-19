@@ -19,10 +19,7 @@ class SplineImplementationTechnique(Enum):
 # are ready to distribute it.
 DEBUG = False
 debug_skip2d = False
-is_settings_object_valid = False
-is_Experimental_active = False
 
-experimental_3d_spline_generation = False
 experimental_3d_body_generation = False
 experimental_3d_spline_implementation: SplineImplementationTechnique = SplineImplementationTechnique.PROJECT_TO_SURFACE
 

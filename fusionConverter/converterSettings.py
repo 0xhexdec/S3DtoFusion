@@ -10,7 +10,6 @@ class ConverterSettings():
     constrainedPoints: bool = False
     fixedPoints: bool = False
     fixedLines: bool = False
-    mergePoints: bool = False
     zUp: bool = False
     closedStringer: bool = True
     closedOutline: bool = True

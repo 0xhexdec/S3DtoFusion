@@ -106,10 +106,6 @@ def command_created(args: adsk.core.CommandCreatedEventArgs):
     group.isEnabledCheckBoxDisplayed = False
     children = group.children
 
-    input = children.addBoolValueInput("3dSplineGenerationInput", "3D Spline generation", True, "", config.experimental_3d_spline_generation)
-    input.tooltip = "Creates the 3D Splines for compound lines"
-    input.tooltipDescription = "CAUTION: Does take some time"
-    input.isEnabled = not config.experimental_3d_body_generation
     input = children.addBoolValueInput("3dBodyGenerationInput", "3D Body generation", True, "", config.experimental_3d_body_generation)
     input.tooltip = "Lofts the Board based on the 3D Splines"
     input.tooltipDescription = "CAUTION: mostly fails"
@@ -157,23 +153,7 @@ def command_input_changed(args: adsk.core.InputChangedEventArgs):
     global old_state
 
     if changed_input.id == '3dBodyGenerationInput':
-        checkBox = adsk.core.BoolValueCommandInput.cast(inputs.itemById('3dBodyGenerationInput'))
-        splineCheckBox = adsk.core.BoolValueCommandInput.cast(inputs.itemById('3dSplineGenerationInput'))
-        # global old_state
-        if checkBox.value:
-            splineCheckBox.isEnabled = False
-            old_state = splineCheckBox.value
-            splineCheckBox.value = True
-            config.experimental_3d_spline_generation = True
-            config.experimental_3d_body_generation = True
-        else:
-            splineCheckBox.isEnabled = True
-            splineCheckBox.value = old_state
-            config.experimental_3d_spline_generation = old_state
-            config.experimental_3d_body_generation = False
-    elif changed_input.id == '3dSplineGenerationInput':
-        old_state = adsk.core.BoolValueCommandInput.cast(inputs.itemById('3dSplineGenerationInput')).value
-        config.experimental_3d_spline_generation = old_state
+       config.experimental_3d_body_generation = adsk.core.BoolValueCommandInput.cast(inputs.itemById('3dBodyGenerationInput')).value
     elif changed_input.id == '3dSplineGenerationTechniqueInput':
         dropdown = adsk.core.DropDownCommandInput.cast(inputs.itemById('3dSplineGenerationTechniqueInput'))
         config.experimental_3d_spline_implementation = config.SplineImplementationTechnique(dropdown.selectedItem.name)

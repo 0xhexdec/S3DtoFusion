@@ -146,10 +146,6 @@ def command_created(args: adsk.core.CommandCreatedEventArgs):
     input = children.addBoolValueInput("fixLinesInput", "Fix Lines", True, "", False)
     input.tooltip = "Fixes all Lines in the sketch"
     input.tooltipDescription = "Applies the fix operation on all Lines so they are protected against unintentional moving. This might be more convenient as you have to unfix only one line segment instead of 4 Points (Per Spline/Bezier Segment)"
-    input = children.addBoolValueInput("mergePointsInput", "Merge Points", True, "", False)
-    input.tooltip = "Merges start and end points from the Splines"
-    input.tooltipDescription = "Start and enpoints of the Splines are not connected when inserted. If you plan to manipulate these lines in Fusion, this option will bond these points together"
-    input.isVisible = False     # TODO currently deactivated
 
     # TODO add option for "Merge Boxes into single sketch"
 
@@ -164,7 +160,7 @@ def command_created(args: adsk.core.CommandCreatedEventArgs):
 
     input = children.addBoolValueInput("closeOutlineInput", "Close Outline", True, "", True)
     input.tooltip = "Connects the Nose and Tail points with a new Centerline"
-    input.tooltipDescription = "Adds a Centerline (that can be used a mirror line) and connects the Nose and Tail points with the center line. This shape can be used as a cut template. <br><i>Only applied to the Outline, not to aother top view lines.</i>"
+    input.tooltipDescription = "Adds a Centerline (that can be used a mirror line) and connects the Nose and Tail points with the center line. This shape can be used as a cut template. <br><i>Only applied to the Outline, not to another top view lines.</i>"
 
     input = children.addBoolValueInput("closeSlicesInput", "Close Slices", True, "", True)
     input.tooltip = "Connects the first and last point of the Slice, essentially closing them at the Stringer"
@@ -182,7 +178,7 @@ def command_created(args: adsk.core.CommandCreatedEventArgs):
     input.tooltip = "Mirrors the Outline additionally to the other side."
     input.tooltipDescription = "By mirroring the Outline to the other side, the resulting shape is full-width board template instead of a half sized. <br><i>Only applied to the Outline, not to other top view lines.</i>"
 
-    if config.is_Experimental_active:
+    if config.experimental_3d_body_generation:
         group = inputs.addGroupCommandInput("3DGroup", "3D Options")
         group.isExpanded = False
         group.isEnabledCheckBoxDisplayed = True
@@ -228,7 +224,6 @@ def command_execute(args: adsk.core.CommandEventArgs):
     settings.constrainedPoints = adsk.core.BoolValueCommandInput.cast(inputs.itemById("constrainPointsInput")).value
     settings.fixedLines = adsk.core.BoolValueCommandInput.cast(inputs.itemById("fixLinesInput")).value
     settings.fixedPoints = adsk.core.BoolValueCommandInput.cast(inputs.itemById("fixPointsInput")).value
-    settings.mergePoints = adsk.core.BoolValueCommandInput.cast(inputs.itemById("mergePointsInput")).value
 
     settings.closedStringer = adsk.core.BoolValueCommandInput.cast(inputs.itemById("closeStringerInput")).value
     settings.closedOutline = adsk.core.BoolValueCommandInput.cast(inputs.itemById("closeOutlineInput")).value
@@ -237,7 +232,7 @@ def command_execute(args: adsk.core.CommandEventArgs):
     settings.mirrorSlices = adsk.core.BoolValueCommandInput.cast(inputs.itemById("mirrorSlicesInput")).value
     settings.mirrorOutline = adsk.core.BoolValueCommandInput.cast(inputs.itemById("mirrorOutlineInput")).value
 
-    if config.is_Experimental_active:
+    if config.experimental_3d_body_generation:
         settings.create3d = adsk.core.GroupCommandInput.cast(inputs.itemById("3DGroup")).isEnabledCheckBoxChecked
         settings.loftAsSolid = adsk.core.RadioButtonGroupCommandInput.cast(inputs.itemById("LoftTypeRadioButtonGroup")).selectedItem.name == "Solid"
         name = adsk.core.RadioButtonGroupCommandInput.cast(inputs.itemById("BoxesRadioButtonGroup")).selectedItem.name

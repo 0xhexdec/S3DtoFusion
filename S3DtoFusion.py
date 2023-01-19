@@ -137,11 +137,9 @@ def run(context):
             settings.mirrorOutline = False  # DONE
             settings.fixedPoints = False    # DONE
             settings.fixedLines = False     # DONE
-            config.debug_skip2d = True
-            config.experimental_3d_spline_generation = True
+            config.debug_skip2d = False
             # settings.create3d = True
 
-            settings.mergePoints = False    # seems to be needed by default. have i done this so far?
             settings.constrainedPoints = False
 
             converter = Converter(model, settings)
