@@ -1,9 +1,9 @@
-from .commandDialog import entry as commandDialog
-from .commandDialog import set_experimental
+from .commandDialog import ExperimentalSettingsDialog
+from .commandDialog import S3DToFusionDialog as commandDialog
 
 commands = [
     commandDialog,
-    set_experimental
+    ExperimentalSettingsDialog
     # paletteShow,
     # paletteSend
 ]

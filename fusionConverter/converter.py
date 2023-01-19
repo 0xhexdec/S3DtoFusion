@@ -6,8 +6,11 @@ import adsk.core
 import adsk.fusion
 from adsk.fusion import ConstructionPlane
 
+from .. import config
 from ..fusionConverter.loftHandler import LoftHandler
-from ..fusionConverter.typeConverter.lines import intersectionCurve
+from ..fusionConverter.typeConverter.lines import (
+    intersection_curve_via_surface_project,
+    intersection_curve_via_text_command)
 from ..s3dModel.s3dx import S3DModel
 from ..s3dModel.types.bezier3d import Bezier3D
 from ..utils import timer
@@ -18,7 +21,6 @@ from .modelConverter import curveDef, outline
 from .modelConverter import slice as sliceconverter
 from .modelConverter import stringer
 
-skip2D = False
 
 class Converter():
     model: S3DModel
@@ -56,7 +58,7 @@ class Converter():
             component = None
             raise NotImplementedError()
 
-        if not skip2D:
+        if not config.debug_skip2d:
             progress.progressValue = 55
             progress.message = "Building Stringer"
             adsk.doEvents()
@@ -77,13 +79,10 @@ class Converter():
             progress.message = "Building Boxes"
             adsk.doEvents()
             self.convertBoxes(component, outlinePlane)  # type: ignore
-            progress.progressValue = 100
-            progress.message = "Lofting Board"
+            progress.progressValue = 80
+        if config.experimental_3d_spline_generation:
+            progress.message = "Building 3D Lines"
             adsk.doEvents()
-
-        if self.settings.create3d:
-            timer.lap()
-            print("Start creating 3D model")
             self.create3D(component, outlinePlane)  # type: ignore
 
         timer.lap()
@@ -101,9 +100,9 @@ class Converter():
     # runs the slice conversion for all slices
     def convertSlices(self, comp: adsk.fusion.Component, tailPlane: ConstructionPlane):
         i: int = 0
-        for slice in self.model.board.slices:
+        for board_slice in self.model.board.slices:
             i += 1
-            sliceconverter.convert(comp, tailPlane, slice, f"Slice {i}", self.settings)
+            sliceconverter.convert(comp, tailPlane, board_slice, f"Slice {i}", self.settings)
 
     def convertBoxes(self, comp: adsk.fusion.Component, outlinePlane: ConstructionPlane):
         # for box in self.model.board.boxes:
@@ -131,9 +130,6 @@ class Converter():
 
         # Part One: Create 3D Splines by using intersectioncurves
         for entry in doublesList:
-            sketch: adsk.fusion.Sketch = comp.sketches.add(outlinePlane)  # type: ignore
-            sketch.name = entry + " 3D"
-
             sideSketch = comp.sketches.itemByName(entry + " (Side)")
             sideSketch.isLightBulbOn = False
             sideSplines = sideSketch.sketchCurves.sketchControlPointSplines
@@ -142,41 +138,49 @@ class Converter():
             topSketch.isLightBulbOn = False
             topSplines = topSketch.sketchCurves.sketchControlPointSplines
 
-            intersectionCurve(sideSplines, topSplines, sketch, False)
-            # comp.sketches.itemByName(entry + " (Top)").sketchCurves.sketchControlPointSplines.add(side, 3)
-            # check if Splines are reversed (don't know why this happens)
-            splinePointsList: List[List[adsk.core.Point3D]] = []
-            isReversed: bool = False
-            print(len(sketch.sketchCurves.sketchControlPointSplines))
-            for spline in sketch.sketchCurves.sketchControlPointSplines:
-                points = sketchPointListToPoint3DList(spline.controlPoints)
-                if spline.startSketchPoint.geometry.x > spline.endSketchPoint.geometry.x:
-                    # spline is revered -> the start point is further away from x=0 than the end point
-                    print(f"start {spline.startSketchPoint.geometry.x} -> end {spline.endSketchPoint.geometry.x}")
-                    points.reverse()
-                    isReversed = True
-                splinePointsList.append(points)
+            if config.experimental_3d_spline_implementation == config.SplineImplementationTechnique.TEXTCOMMANDS:
+                sketch: adsk.fusion.Sketch = comp.sketches.add(outlinePlane)  # type: ignore
+                sketch.name = entry + " 3D"
+                intersection_curve_via_text_command(sideSplines, topSplines, sketch, False)
+            
+                # comp.sketches.itemByName(entry + " (Top)").sketchCurves.sketchControlPointSplines.add(side, 3)
+                # check if Splines are reversed (don't know why this happens)
+                splinePointsList: List[List[adsk.core.Point3D]] = []
+                isReversed: bool = False
+                print(len(sketch.sketchCurves.sketchControlPointSplines))
+                for spline in sketch.sketchCurves.sketchControlPointSplines:
+                    points = sketchPointListToPoint3DList(spline.controlPoints)
+                    if spline.startSketchPoint.geometry.x > spline.endSketchPoint.geometry.x:
+                        # spline is revered -> the start point is further away from x=0 than the end point
+                        print(f"start {spline.startSketchPoint.geometry.x} -> end {spline.endSketchPoint.geometry.x}")
+                        points.reverse()
+                        isReversed = True
+                    splinePointsList.append(points)
 
-            # this flipps the reversed splines BUT the new creation of the splines also fixes some weird errors
-            # so even if the splines were all correct, delete and create them new!
+                # this flipps the reversed splines BUT the new creation of the splines also fixes some weird errors
+                # so even if the splines were all correct, delete and create them new!
 
-            for i in range(sketch.sketchCurves.sketchControlPointSplines.count -1, -1, -1):
-                sketch.sketchCurves.sketchControlPointSplines[i].deleteMe()
+                for i in range(sketch.sketchCurves.sketchControlPointSplines.count -1, -1, -1):
+                    sketch.sketchCurves.sketchControlPointSplines[i].deleteMe()
 
-            for splinePoints in splinePointsList:
-                sketch.sketchCurves.sketchControlPointSplines.add(splinePoints, 3)  # type: ignore
+                for splinePoints in splinePointsList:
+                    sketch.sketchCurves.sketchControlPointSplines.add(splinePoints, 3)  # type: ignore
 
-            # make splines continuous
-            for i in range(sketch.sketchCurves.sketchControlPointSplines.count - 1):
-                spline1 = sketch.sketchCurves.sketchControlPointSplines[i]
-                spline2 = sketch.sketchCurves.sketchControlPointSplines[i+1]
-                # set the startpoint to the endpoint of the last
-                spline2.startSketchPoint.merge(spline1.endSketchPoint)
+                # make splines continuous
+                for i in range(sketch.sketchCurves.sketchControlPointSplines.count - 1):
+                    spline1 = sketch.sketchCurves.sketchControlPointSplines[i]
+                    spline2 = sketch.sketchCurves.sketchControlPointSplines[i+1]
+                    # set the startpoint to the endpoint of the last
+                    spline2.startSketchPoint.merge(spline1.endSketchPoint)
 
-            # constrain control lines from the splines so that the splines are continuous and smooth
-            constraints = sketch.geometricConstraints
-            lineIndex = -1
-            for i in range(sketch.sketchCurves.sketchControlPointSplines.count - 1):
-                lineIndex += len(sketch.sketchCurves.sketchControlPointSplines[i].controlPoints) - 1
-                # sketch.sketchCurves.sketchLines[lineIndex].isFixed = False
-                constraints.addCollinear(sketch.sketchCurves.sketchLines[lineIndex], sketch.sketchCurves.sketchLines[lineIndex + 1])
+                # constrain control lines from the splines so that the splines are continuous and smooth
+                constraints = sketch.geometricConstraints
+                lineIndex = -1
+                for i in range(sketch.sketchCurves.sketchControlPointSplines.count - 1):
+                    lineIndex += len(sketch.sketchCurves.sketchControlPointSplines[i].controlPoints) - 1
+                    # sketch.sketchCurves.sketchLines[lineIndex].isFixed = False
+                    constraints.addCollinear(sketch.sketchCurves.sketchLines[lineIndex], sketch.sketchCurves.sketchLines[lineIndex + 1])
+            elif config.experimental_3d_spline_implementation == config.SplineImplementationTechnique.PROJECT_TO_SURFACE:
+                sketch = intersection_curve_via_surface_project(sideSplines, topSplines, entry + " 3D")
+            else:
+                raise NotImplementedError()

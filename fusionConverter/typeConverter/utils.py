@@ -1,5 +1,7 @@
 from enum import Enum, auto
+from typing import Union
 
+import adsk.fusion
 from adsk.fusion import Sketch
 
 

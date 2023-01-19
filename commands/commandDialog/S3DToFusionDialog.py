@@ -17,7 +17,6 @@ from ...fusionConverter.converterSettings import ConverterSettings
 from ...lib import fusion360utils as futil
 from ...s3dModel import s3dx
 from ...s3dModel.s3dx import S3DModel
-from ...utils import addin_settings
 
 app = adsk.core.Application.get()
 ui = app.userInterface
@@ -183,7 +182,7 @@ def command_created(args: adsk.core.CommandCreatedEventArgs):
     input.tooltip = "Mirrors the Outline additionally to the other side."
     input.tooltipDescription = "By mirroring the Outline to the other side, the resulting shape is full-width board template instead of a half sized. <br><i>Only applied to the Outline, not to other top view lines.</i>"
 
-    if addin_settings.is_Experimental_active:
+    if config.is_Experimental_active:
         group = inputs.addGroupCommandInput("3DGroup", "3D Options")
         group.isExpanded = False
         group.isEnabledCheckBoxDisplayed = True
@@ -206,6 +205,7 @@ def command_created(args: adsk.core.CommandCreatedEventArgs):
         radioGroup.isEnabled = False
 
 
+    # futil.add_handler(args.command.execute, command_execute, local_handlers=local_handlers)
     futil.add_handler(args.command.execute, command_execute, local_handlers=local_handlers)
     futil.add_handler(args.command.inputChanged, command_input_changed, local_handlers=local_handlers)
     futil.add_handler(args.command.executePreview, command_preview, local_handlers=local_handlers)
@@ -223,8 +223,8 @@ def command_execute(args: adsk.core.CommandEventArgs):
     # print("After intersection curve")
     inputs = args.command.commandInputs
 
-    filename = adsk.core.TextBoxCommandInput.cast(inputs.itemById("filePathText")).text
     settings: ConverterSettings = ConverterSettings()
+    settings.filename = adsk.core.TextBoxCommandInput.cast(inputs.itemById("filePathText")).text
     settings.constrainedPoints = adsk.core.BoolValueCommandInput.cast(inputs.itemById("constrainPointsInput")).value
     settings.fixedLines = adsk.core.BoolValueCommandInput.cast(inputs.itemById("fixLinesInput")).value
     settings.fixedPoints = adsk.core.BoolValueCommandInput.cast(inputs.itemById("fixPointsInput")).value
@@ -237,7 +237,7 @@ def command_execute(args: adsk.core.CommandEventArgs):
     settings.mirrorSlices = adsk.core.BoolValueCommandInput.cast(inputs.itemById("mirrorSlicesInput")).value
     settings.mirrorOutline = adsk.core.BoolValueCommandInput.cast(inputs.itemById("mirrorOutlineInput")).value
 
-    if addin_settings.is_Experimental_active:
+    if config.is_Experimental_active:
         settings.create3d = adsk.core.GroupCommandInput.cast(inputs.itemById("3DGroup")).isEnabledCheckBoxChecked
         settings.loftAsSolid = adsk.core.RadioButtonGroupCommandInput.cast(inputs.itemById("LoftTypeRadioButtonGroup")).selectedItem.name == "Solid"
         name = adsk.core.RadioButtonGroupCommandInput.cast(inputs.itemById("BoxesRadioButtonGroup")).selectedItem.name
@@ -245,13 +245,14 @@ def command_execute(args: adsk.core.CommandEventArgs):
         settings.boxesAsBody = name == "new Body" or name == "Both"
 
     plane: adsk.fusion.ConstructionPlane = adsk.fusion.ConstructionPlane.cast(adsk.core.SelectionCommandInput.cast(inputs.itemById("selectionButton")).selection(0).entity)
-
+    config.settings_object = settings
     progress = ui.createProgressDialog()
+    # run generation after the command terminated
     progress.isCancelButtonShown = False
     progress.show("Converting S3DX file", "Load S3DX file", 0, 100, 0)
     adsk.doEvents()
-    model: S3DModel = s3dx.fromFile(filename, progress)
-    converter = Converter(model, settings)
+    model: S3DModel = s3dx.fromFile(config.settings_object.filename, progress)
+    converter = Converter(model, config.settings_object)
     progress.progressValue = 50
     progress.message = "Creating Sketches"
     adsk.doEvents()

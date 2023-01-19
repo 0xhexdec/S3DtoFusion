@@ -10,6 +10,25 @@ I am aware of the fact Shape3d X offers a "3D Export" option and this Add-In mig
 
 As this Add-In is still in early development, there is no official Fusion360 installer. You have to add the Add-In manually.
 
+You have two Options, [manual](#manual) or [semi-auto](#semi-auto):
+
+### Semi-Auto
+
+Install the installer-script from the Fusion360 AppStore:
+[Install scripts or addins from GitHub](https://apps.autodesk.com/FUSION/en/Detail/Index?id=789800822168335025&os=Win64&appLang=en)
+
+Start Fusion (this works even with Fusion360 currently running) and press `Shift + S`
+
+Click `GitHubToFusion360` and press `Run` or doubleclick.
+
+Paste this url into the textfield:
+
+    https://github.com/0xhexdec/S3DtoFusion
+
+and hit `OK`, now its all set up.
+
+### Manual
+
 Firstly, download the latest [release](https://github.com/0xhexdec/S3DtoFusion/releases) of the Add-In.
 
 Unzip the dowloaded file and rename the folder `S3DToFusion-x.y.z` to `S3DToFusion`, simply remove the version number.

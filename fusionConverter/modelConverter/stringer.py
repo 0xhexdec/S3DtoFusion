@@ -24,6 +24,6 @@ def convert(comp: adsk.fusion.Component, stringerPlane: ConstructionPlane, strin
     if settings.fixedPoints:
         for i in range(stringerSketch.sketchPoints.count):
             stringerSketch.sketchPoints.item(i).isFixed = True
-    
+
     if settings.fixedLines:
         fixAllLinesInSketch(stringerSketch)

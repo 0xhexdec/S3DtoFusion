@@ -22,6 +22,7 @@ class ConverterSettings():
     loftAsSolid: bool = True
     boxesAsBody: bool = True
     boxesCutFromBoard: bool = False
+    filename: str = ""
 
     def __init__(self) -> None:
         self.zUp = adsk.core.Application.get().preferences.generalPreferences.defaultModelingOrientation == adsk.core.DefaultModelingOrientations.ZUpModelingOrientation
