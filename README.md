@@ -49,6 +49,9 @@ The Command Dialog opens (*look may differ*):
 
 Choose your s3dx file (the file needs to comply with [file requirements](#file-requirements)), set the options to your liking and hit OK. The Add-In will do its best to create some useful data for you. This may take a while depending on your selected options.
 
+![basic_command_dialog](readme_resources/created_test_board.png)
+This is a preview how *the blank* surfboard looks like.
+
 ## Features
 
 Current features are:
