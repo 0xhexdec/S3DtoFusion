@@ -20,7 +20,7 @@ skipFileSelection = False
 
 CMD_ID = f'Plankton_{config.ADDIN_NAME}_set_experimental_dialog'
 CMD_NAME = 'Experimental Settings'
-CMD_Description = 'Manages experimental features of the S3DX import AddIn. Experimental features are not stable, may result in Fusion360 crashing and have other unexpected behaviour.'
+CMD_Description = 'CAUTION! Manages experimental features of the S3DX import AddIn. Experimental features are not stable, may result in Fusion360 crashing and have other unexpected behaviour. Some settings may have no functionality bound to them!'
 
 # This is done by specifying the workspace, the tab, and the panel, and the
 # command it will be inserted beside. Not providing the command to position it

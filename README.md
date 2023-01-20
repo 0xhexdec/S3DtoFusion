@@ -4,7 +4,7 @@ S3DtoFusion is a Fusion360 Add-In allowing to import s3dx savefiles from Shape3d
 
 ## Important Note
 
-I am aware of the fact Shape3d X offers a "3D Export" option and this Add-In might look like a way to get around the (from a hobby-shaper's perspective "massive") investment for that option to purchase. But please keep in mind: While loading the File, some slight modifications to lines and points are necessary to persuade Fusion to do what I want. Also there are some approximations done due to some fusion-internals I can not overcome and some assumptions are made how Shape3d X does, means or handles things. This Add-In is strictly made for the DIY community, who want to play around with the 3D model in Fusion360 (But please, buy at least [the standart version](https://www.shape3d.com/Products/Design.aspx) and give the devs some love) and **NOT** for professional Shapers. Also, take a look at the [known issues](#known-issues) and [file requirements](#file-requirements) to see if your board is able to be loaded properly.
+I am aware of the fact Shape3d X offers a "3D Export" option and this Add-In might look like a way to get around the (from a hobby-shaper's perspective "massive") investment for that option to purchase. But please keep in mind: While loading the File, some slight modifications to lines and points are necessary to persuade Fusion to do what I want. Also there are some approximations done due to some fusion-internals I can not overcome and some assumptions are made how Shape3d X does, means or handles things. This Add-In is strictly made for the DIY community, who want to play around with the 3D model in Fusion360 (But please, if you can afford it, buy [the standart version](https://www.shape3d.com/Products/Design.aspx) and give the devs some love) and **NOT** for professional Shapers. Also, take a look at the [known issues](#known-issues) and [file requirements](#file-requirements) to see if your board is able to be loaded properly.
 
 ## How To Install
 
@@ -57,7 +57,10 @@ Current features are:
 + Creating 3D Bezier Curves for modifiable curves (Apex, Deck, Rail, etc) - See [file requirements](#file-requirements)
 + Importing the Boxes (Finboxes, Leashplugs, etc) as 2D Sketches
 + Importing the Slices
-+ Lofting the Board to a 3D Body (***experimental***)
+
+## Feature Roadmap
+
+The ultimate goal is to loft the Board to a 3D Body. But this may take some time.
 
 ## File Requirements
 
@@ -72,8 +75,11 @@ Disable all kinds of file protection!
 + The Sketches are a **MESS**!
 + Starting the AddIn takes some time and Fusion is unresponsive during this time. I am not 100% sure why but a big reason is that I have to download a python package in the background. Will fix this someday.
 + every form of "Non continuous" in the stringer or outline makes fusion to freak out, best to use the **Tangent-Type: Continuous** only (the type where both handles are fixed to each other) I try to work around this limitation in the future.
-+ Lofting... ever used Fusion's lofting before?
-+ 3D Body creation crashes Fusion, not my fault though...
++ the current bodies are used for a workaround, it's not that I like it that way
+
+## Current Limits
+
++ I only own the standard license. therefore, not features from any higher versions are available (like Asymmetric designs, 3D Layers, ...)
 
 ## Q&A
 
@@ -83,17 +89,21 @@ Yay, another one. Please report the bug by creating an [issue](https://github.co
 
 ### I can't see the 3D Options
 
-**Important Note**: *The 3D body creation feature currently has a bug, it uses on some Fusion functionality that is not directly accessible via the API. I used some workarounds there that are officially deprecated by Autodesk. In some circumstances, the code works fine, but currently results in a crash of Fusion360. I will try to find another workaround.*
+**Important Note**: *The 3D body creation feature is in such a early state that I deactivated it completly. Please wait for a future update.*
 
-If you downloaded the latest release and you can't see the 3D Options, you did not activate the `Experimental Features`, simply activate them by doing: `UTILITIES` -> `S3DX IMPORT dropdown` -> `Activate Experimental`
+If you want to play with sneek-peeks of the development, try some `Experimental Settings`, these are always subject to change and I can't guarante for anything, neither material nor life.
 
 ![activate_experimental](readme_resources/activate_experimental.png)
 
 Experimental features are prone to crashing, not stable and/or behaving weird. DO NOT EXPECT THEM TO WORK! Be happy if they do.
 
-### Why are some features grayed out?
+### The Board and the lines are not where they should be
 
-Grayed out options could be visible in the experimental view of the Add-In (if at all). These features either do not have functionality and are placeholders or are so buggy and work-in-progress that they are not enabled. Treat them as if they weren't there.
+I use Fusion in **Z-UP** mode, it can have an impact in how some lines are placed. Create an issue if this happens, I will try to fix it.
+
+### My file does not load
+
+Probably a bug, create an Issue and *PLEASE* attach your .s3dx file to the Issue. If you don't want to have it public, we will find a way how you can send it to me. If your file is *confidential*, you shouldn't use this plugin in the first place!
 
 ## Why an Add-In and not a Script?
 
