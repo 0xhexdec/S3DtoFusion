@@ -21,6 +21,7 @@ class ConverterSettings():
     loftAsSolid: bool = True
     boxesAsBody: bool = True
     boxesCutFromBoard: bool = False
+    merge3dSplineEndpoints: bool = True
     filename: str = ""
 
     def __init__(self) -> None:

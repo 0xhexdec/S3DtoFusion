@@ -180,7 +180,33 @@ class Converter():
                     lineIndex += len(sketch.sketchCurves.sketchControlPointSplines[i].controlPoints) - 1
                     # sketch.sketchCurves.sketchLines[lineIndex].isFixed = False
                     constraints.addCollinear(sketch.sketchCurves.sketchLines[lineIndex], sketch.sketchCurves.sketchLines[lineIndex + 1])
+            
             elif config.experimental_3d_spline_implementation == config.SplineImplementationTechnique.PROJECT_TO_SURFACE:
                 sketch = intersection_curve_via_surface_project(sideSplines, topSplines, entry + " 3D")
+                if config.settings_object.merge3dSplineEndpoints:
+                    # define spline "start" as the point with the lower x value
+                    splines = sketch.sketchCurves.sketchControlPointSplines
+                    starts: List[adsk.fusion.SketchPoint] = []
+                    ends: List[adsk.fusion.SketchPoint] = []
+                    for sp in splines:
+                        # first x is smaller than last x -> first is start
+                        if sp.controlPoints[0].geometry.x < sp.controlPoints[len(sp.controlPoints)-1].geometry.x:
+                            starts.append(sp.controlPoints[0])
+                            ends.append(sp.controlPoints[len(sp.controlPoints)-1])
+                        else:
+                            starts.append(sp.controlPoints[len(sp.controlPoints)-1])
+                            ends.append(sp.controlPoints[0])
+
+                    for start in starts[1:]:
+                        nearestPoint: adsk.fusion.SketchPoint = ends[0]
+                        nearestDistance: float = 10000000000
+                        for end in ends:
+                            distance = start.geometry.distanceTo(end.geometry)
+                            if distance < nearestDistance:
+                                nearestDistance = distance
+                                nearestPoint = end
+                        start.merge(nearestPoint)
+                        ends.remove(nearestPoint)
+
             else:
                 raise NotImplementedError()

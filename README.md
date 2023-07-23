@@ -75,6 +75,7 @@ Disable all kinds of file protection!
 
 ## Known Issues
 
++ selecting different rocker planes has no effect
 + The Sketches are a **MESS**!
 + Starting the AddIn takes some time and Fusion is unresponsive during this time. I am not 100% sure why but a big reason is that I have to download a python package in the background. Will fix this someday.
 + every form of "Non continuous" in the stringer or outline makes fusion to freak out, best to use the **Tangent-Type: Continuous** only (the type where both handles are fixed to each other) I try to work around this limitation in the future.

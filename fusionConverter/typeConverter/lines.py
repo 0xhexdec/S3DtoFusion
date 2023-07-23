@@ -166,8 +166,12 @@ def intersection_curve_via_surface_project(curve1: Union[adsk.fusion.SketchEntit
     faceList = []
     for face in body.faces:
         faceList.append(face)
-    newSketch.projectToSurface(faceList, curveList, adsk.fusion.SurfaceProjectTypes.AlongVectorSurfaceProjectType, rootComponent.zConstructionAxis)
+    projectedLines = newSketch.projectToSurface(faceList, curveList, adsk.fusion.SurfaceProjectTypes.AlongVectorSurfaceProjectType, rootComponent.zConstructionAxis)
+    if config.settings_object.merge3dSplineEndpoints:
+        for entity in projectedLines:
+            entity.isReference = False
     body.isLightBulbOn = False
+    
     return newSketch
 
 

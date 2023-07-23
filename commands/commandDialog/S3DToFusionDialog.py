@@ -126,7 +126,7 @@ def command_created(args: adsk.core.CommandCreatedEventArgs):
     selection.tooltip = "Select the Plane for the rocker, default is the XZ Plane"
     selection.tooltipDescription = "Select the plane for the Rocker, all other Lines will be added to different planes based and angled on the selected"
     selection.addSelection(adsk.fusion.Design.cast(app.activeProduct).rootComponent.xZConstructionPlane)
-    selection.isVisible = False
+    selection.isVisible = True
 
     # create constrain group
     group = inputs.addGroupCommandInput("ConstrainSketchesGroup", "Constrain Sketches")
