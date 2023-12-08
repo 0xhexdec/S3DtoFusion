@@ -8,6 +8,6 @@
 	},
 	"version":	"0.1",
 	"runOnStartup":	false,
-	"supportedOS":	"windows",
+	"supportedOS":	"windows|mac",
 	"editEnabled":	true
 }
