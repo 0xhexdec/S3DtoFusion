@@ -19,11 +19,13 @@ except ModuleNotFoundError:
         executable: str = sys.executable[:sys.executable.find("Fusion360")]
         executable += os.sep + "Python" + os.sep + "python.exe"
 
+        subprocess.run([sys.executable, "-m", "ensurepip", "--upgrade"], check=True, capture_output=True, shell=False)
         reqs = subprocess.run([executable, '-m', 'pip', 'install', 'numpy'], check=True, capture_output=True, shell=False, timeout=40)
         import numpy
         futil.log("Done", adsk.core.LogLevels.InfoLogLevel, True)
     elif (sys.executable.find("python") != -1):
 
+        subprocess.run([sys.executable, "-m", "ensurepip", "--upgrade"], check=True, capture_output=True, shell=False)
         reqs = subprocess.run([sys.executable, '-m', 'pip', 'install', 'numpy'], check=True, capture_output=True, shell=False, timeout=40)
         import numpy
         futil.log("Done", adsk.core.LogLevels.InfoLogLevel, True)
