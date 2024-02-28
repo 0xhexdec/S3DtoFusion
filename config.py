@@ -28,7 +28,9 @@ experimental_3d_spline_implementation: SplineImplementationTechnique = SplineImp
 # that need a unique name. It's also recommended to use a company name as
 # part of the ID to better ensure the ID is unique.
 ADDIN_NAME = os.path.basename(os.path.dirname(__file__))
-COMPANY_NAME = 'PlanktonProgrammingPlatoon'
+COMPANY_NAME = 'Plankton Software'
+REPOSITORY_URL = 'https://github.com/0xhexdec/S3DtoFusion'
+REPOSITORY_ISSUES_URL = REPOSITORY_URL + '/issues'
 
 settings_object: ConverterSettings
 

@@ -1,4 +1,3 @@
-# Assuming you have not changed the general structure of the template no modification is needed in this file.
 from typing import List
 
 import adsk.core

@@ -6,8 +6,8 @@
 	"description":	{
 		"":	"Import your .s3dx files from Shape3D into Fusion360. "
 	},
-	"version":	"0.1",
-	"runOnStartup":	false,
-	"supportedOS":	"windows",
+	"version":	"0.1.1",
+	"runOnStartup":	true,
+	"supportedOS":	"windows|mac",
 	"editEnabled":	true
 }
