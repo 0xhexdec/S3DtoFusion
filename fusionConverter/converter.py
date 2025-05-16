@@ -33,7 +33,7 @@ class Converter():
             self.settings = settings
 
     def convertAll(self, app: adsk.core.Application, rockerPlane: Optional[ConstructionPlane], progress: adsk.core.ProgressDialog):
-        print("Start converting an creating sketches...")
+        print("Start converting and creating sketches...")
         timer.reset()
         rootComponent = adsk.fusion.Design.cast(app.activeProduct).rootComponent
         component = rootComponent
@@ -81,9 +81,10 @@ class Converter():
             self.convertBoxes(component, outlinePlane)  # type: ignore
             progress.progressValue = 80
 
-        progress.message = "Building 3D Lines"
-        adsk.doEvents()
-        self.create3D(component, outlinePlane)  # type: ignore
+        if config.experimental_3d_body_generation:
+            progress.message = "Building 3D Lines"
+            adsk.doEvents()
+            self.create3D(component, outlinePlane)  # type: ignore
 
         timer.lap()
         print("Done")

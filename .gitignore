@@ -1,3 +1,7 @@
 *.pyc
 /.vscode
+/.idea
 .env
+
+# Mac Folder Files
+*.DS_STORE

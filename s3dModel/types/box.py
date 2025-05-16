@@ -4,7 +4,7 @@ from xml.dom.minidom import Element
 from ...utils.Exceptions import ElementNotFoundException
 from .point2d import Point2d
 from .point3d import Point3d
-from .utils import getBool, getFloat, getInt, getStr
+from .utils import getBool, getFloat, getInt, getStr, getOptionalFloat
 
 
 class Box():
@@ -22,8 +22,8 @@ class Box():
     central: bool
     symNoseTail: int
     iFixedToBt: int
-    distFixedTo: float
-    aFixedTo: float
+    distFixedTo: Optional[float]
+    aFixedTo: Optional[float]
     fixedTail: int
     fixedNose: int
     fixedCenter: int
@@ -67,8 +67,8 @@ class Box():
         self.central = getBool(box, "Central")
         self.symNoseTail = getInt(box, "SymNoseTail")
         self.iFixedToBt = getInt(box, "IFixedToBt")
-        self.distFixedTo = getFloat(box, "DistFixedTo")
-        self.aFixedTo = getFloat(box, "AFixedTo")
+        self.distFixedTo = getOptionalFloat(box, "DistFixedTo")
+        self.aFixedTo = getOptionalFloat(box, "AFixedTo")
         self.fixedTail = getInt(box, "FixedTail")
         self.fixedNose = getInt(box, "FixedNose")
         self.fixedCenter = getInt(box, "FixedCenter")

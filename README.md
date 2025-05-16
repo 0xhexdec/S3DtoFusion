@@ -91,6 +91,9 @@ Disable all kinds of file protection!
 
 Yay, another one. Please report the bug by creating an [issue](https://github.com/0xhexdec/S3DtoFusion/issues).
 
+### The AddIn does not start
+If its the first time you tried this, it may have something to do with the downloading of some packages, which is done on startup. It may be not as robust as I hoped for. Try to start the AddIn again, maybe multiple times but normally, the second start should result in a different outcome. Otherwise... BUUUGGG!!!
+
 ### I can't see the 3D Options
 
 **Important Note**: *The 3D body creation feature is in such a early state that I deactivated it completly. Please wait for a future update.*

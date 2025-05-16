@@ -1,6 +1,7 @@
 # Shape3d X representation of a board
 
 from __future__ import annotations
+from typing import Optional
 
 from typing import Dict, List
 from xml.dom.minidom import Element, Node
@@ -15,10 +16,10 @@ from .types.box import Box
 from .types.point3d import Point3d
 from .types.slice import Slice
 from .types.stringerd3d import StringerD3D
-from .types.utils import getFloat, getInt, getStr
+from .types.utils import getFloat, getInt, getStr, getOptionalInt
 
 
-class Board():
+class Board:
 
     version: int
     versionNumber: str
@@ -43,9 +44,9 @@ class Board():
     thicknessLengthRescaleRatio: float
     stockLMin: float
     stockLMax: float
-    vCResizeThickness: int
-    vCResizeRocker: int
-    vCResizeNone: int
+    vCResizeThickness: Optional[int]
+    vCResizeRocker: Optional[int]
+    vCResizeNone: Optional[int]
     volumeTail: float
     volumeNose: float
     surfaceProjTail: float
@@ -65,7 +66,7 @@ class Board():
     license: str
     options: int
     symmetry: int
-    ThicknessZStretch: int
+    ThicknessZStretch: Optional[int]
     afficheCourbureThck: int
     colorThck: int
     colorCourbureThck: int
@@ -74,10 +75,10 @@ class Board():
     colorCpl: int
     colorCourbureCpl: int
     colorGuidelinesCpl: int
-    nbTracesMesuresTopView: int
-    nbTracesMesuresSideView: int
-    nbTracesMesuresThicknessView: int
-    nbTracesMesuresSlicesView: int
+    nbTracesMesuresTopView: Optional[int]
+    nbTracesMesuresSideView: Optional[int]
+    nbTracesMesuresThicknessView: Optional[int]
+    nbTracesMesuresSlicesView: Optional[int]
     ligneFlotaison: float
     numberOfSlices: int
     sandwich: float
@@ -252,9 +253,9 @@ class Board():
             self.thicknessLengthRescaleRatio = getFloat(board, "ThicknessLengthRescaleRatio")
             self.stockLMin = getFloat(board, "StockLMin")
             self.stockLMax = getFloat(board, "StockLMax")
-            self.vCResizeThickness = getInt(board, "VCResizeThickness")
-            self.vCResizeRocker = getInt(board, "VCResizeRocker")
-            self.vCResizeNone = getInt(board, "VCResizeNone")
+            self.vCResizeThickness = getOptionalInt(board, "VCResizeThickness")
+            self.vCResizeRocker = getOptionalInt(board, "VCResizeRocker")
+            self.vCResizeNone = getOptionalInt(board, "VCResizeNone")
             self.volumeTail = getFloat(board, "VolumeTail")
             self.volumeNose = getFloat(board, "VolumeNose")
             self.surfaceProjTail = getFloat(board, "SurfaceProjTail")
@@ -274,7 +275,7 @@ class Board():
             self.license = getStr(board, "License")
             self.options = getInt(board, "Options")
             self.symmetry = getInt(board, "Symmetry")
-            self.ThicknessZStretch = getInt(board, "ThicknessZStretch")
+            self.ThicknessZStretch = getOptionalInt(board, "ThicknessZStretch")
             self.afficheCourbureThck = getInt(board, "AfficheCourbureThck")
             self.colorThck = getInt(board, "ColorThck")
             self.colorCourbureThck = getInt(board, "ColorCourbureThck")
@@ -283,10 +284,10 @@ class Board():
             self.colorCpl = getInt(board, "ColorCpl")
             self.colorCourbureCpl = getInt(board, "ColorCourbureCpl")
             self.colorGuidelinesCpl = getInt(board, "ColorGuidelinesCpl")
-            self.nbTracesMesuresTopView = getInt(board, "nbTracesMesuresTopView")
-            self.nbTracesMesuresSideView = getInt(board, "nbTracesMesuresSideView")
-            self.nbTracesMesuresThicknessView = getInt(board, "nbTracesMesuresThicknessView")
-            self.nbTracesMesuresSlicesView = getInt(board, "nbTracesMesuresSlicesView")
+            self.nbTracesMesuresTopView = getOptionalInt(board, "nbTracesMesuresTopView")
+            self.nbTracesMesuresSideView = getOptionalInt(board, "nbTracesMesuresSideView")
+            self.nbTracesMesuresThicknessView = getOptionalInt(board, "nbTracesMesuresThicknessView")
+            self.nbTracesMesuresSlicesView = getOptionalInt(board, "nbTracesMesuresSlicesView")
             self.ligneFlotaison = getFloat(board, "LigneFlotaison")
             self.sandwich = getFloat(board, "Sandwich")
             self.rock_angle = getFloat(board, "Rock_angle")
